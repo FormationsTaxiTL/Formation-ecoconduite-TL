@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0069)file:///C:/Users/Caroline/Downloads/Formation_Ecoconduite_TaxiTL.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formation Éco-conduite — Taxi TL</title>
-<script src="./Formation Éco-conduite — Taxi TL_files/jspdf.umd.min.js.téléchargement"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--blue:#0D2B5E;--teal:#2AB5C8;--tl:#E8F7FA;--white:#fff;--bg:#F0F5FB;--bdr:#C8D8E8;--txt:#1a2535;--mu:#607080;--green:#1a7a55;--red:#c0392b;--gold:#C8A951}
@@ -109,14 +109,14 @@ h2.mt{font-size:18px;color:var(--blue);margin-bottom:8px;font-weight:700;line-he
   <div class="lbox">
     <div class="lhd">
       <div class="logo">taxitl</div>
-      <h1>Formation Éco-conduite &amp; Impact Carbone</h1>
+      <h1>Formation Éco-conduite & Impact Carbone</h1>
       <p>Formation interne obligatoire — GTL / TAXI TL · Société à mission</p>
-      <p style="color:rgba(255,255,255,.45);font-size:10px;margin-top:5px">Validé Direction &amp; Management · Juin 2026</p>
+      <p style="color:rgba(255,255,255,.45);font-size:10px;margin-top:5px">Validé Direction & Management · Juin 2026</p>
     </div>
     <div class="lbd">
       <div class="lerr" id="lerr"></div>
       <label>Code d'accès</label>
-      <input type="password" id="fcode" placeholder="Code fourni par les RH" onkeydown="if(event.key===&#39;Enter&#39;)go()">
+      <input type="password" id="fcode" placeholder="Code fourni par les RH" onkeydown="if(event.key==='Enter')go()">
       <label>Nom *</label>
       <input type="text" id="fnom" placeholder="Votre nom de famille">
       <label>Prénom *</label>
@@ -144,7 +144,7 @@ h2.mt{font-size:18px;color:var(--blue);margin-bottom:8px;font-weight:700;line-he
 <div id="sc-mod"><div class="app"><div class="card">
   <div class="chd">
     <div class="logo">taxitl</div>
-    <h2>Formation Éco-conduite &amp; Impact Carbone</h2>
+    <h2>Formation Éco-conduite & Impact Carbone</h2>
     <p>Formation interne obligatoire — GTL / TAXI TL · Société à mission · Juin 2026</p>
   </div>
   <div class="tbar"></div>
@@ -351,7 +351,7 @@ Ces 3 principes résument 80% des gains mesurés lors des formations éco-condui
 
 <!-- ═══ MODULE 4 ═══ -->
 <div class="mc" id="m4">
-<span class="mbadge">Module 4 / 5 — Véhicule, entretien &amp; réglementation</span>
+<span class="mbadge">Module 4 / 5 — Véhicule, entretien & réglementation</span>
 <h2 class="mt">L'entretien du véhicule : fondation de l'éco-conduite</h2>
 <div class="obj-box"><strong>Objectifs pédagogiques</strong>À l'issue de ce module, vous serez capable de : identifier les 6 points d'entretien à impact direct sur la consommation ; expliquer le système de vignettes Crit'Air et les obligations ZFE pour la flotte TAXI TL ; reconnaître les signaux d'alerte à remonter au gestionnaire de flotte ; comparer les émissions réelles des 3 motorisations sur cycle de vie complet.</div>
 
@@ -422,7 +422,7 @@ Ces 3 principes résument 80% des gains mesurés lors des formations éco-condui
 
 <!-- ═══ MODULE 5 ═══ -->
 <div class="mc" id="m5">
-<span class="mbadge">Module 5 / 5 — Impact environnemental &amp; engagement</span>
+<span class="mbadge">Module 5 / 5 — Impact environnemental & engagement</span>
 <h2 class="mt">Mesurer l'impact, comprendre les enjeux, s'inscrire dans la durée</h2>
 <div class="obj-box"><strong>Objectifs pédagogiques</strong>À l'issue de ce module, vous serez capable de : situer le transport dans les émissions nationales de GES ; expliquer les objectifs de la SNBC pour le transport à 2030 ; décrire les 4 engagements RSE de TAXI TL et leur impact commercial ; relier votre action quotidienne de dispatch aux ODD 8, 11, 13 et 17.</div>
 
@@ -505,7 +505,7 @@ Ces 3 principes résument 80% des gains mesurés lors des formations éco-condui
     <div class="qfb" id="qfb"></div>
     <div class="nav">
       <button class="btn-back" onclick="backM()">← Revoir le module</button>
-      <button class="btn-next" id="bsuiv" onclick="nextQ()" disabled="">Suivant →</button>
+      <button class="btn-next" id="bsuiv" onclick="nextQ()" disabled>Suivant →</button>
     </div>
   </div>
 </div></div></div>
@@ -873,6 +873,5 @@ function dlPDF(){
   doc.save('Certificat_Ecoconduite_'+NOM+'_'+PRENOM+'_'+today.replace(/ /g,'-')+'.pdf');
 }
 </script>
-
-
-</body></html>
+</body>
+</html>
