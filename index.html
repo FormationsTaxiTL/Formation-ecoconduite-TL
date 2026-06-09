@@ -98,6 +98,12 @@ h2.mt{font-size:18px;color:var(--blue);margin-bottom:8px;font-weight:700;line-he
 .cert-t{font-size:22px;font-weight:700;color:var(--blue);margin-bottom:.5rem}
 .cert-s{font-size:14px;color:var(--mu);margin-bottom:1.5rem;line-height:1.6}
 .btn-pdf{display:inline-block;padding:13px 32px;background:var(--teal);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:.75rem}
+
+.sig-box{margin:20px 0 10px;text-align:center}
+.sig-box p{font-size:13px;color:var(--mu);margin-bottom:8px}
+#sig-canvas{border:2px solid var(--bdr);border-radius:9px;cursor:crosshair;background:white;display:block;margin:0 auto;touch-action:none}
+.sig-btns{display:flex;justify-content:center;gap:10px;margin-top:8px}
+.btn-clear{padding:8px 18px;background:transparent;color:var(--mu);border:1.5px solid var(--bdr);border-radius:8px;font-size:12px;cursor:pointer}
 .btn-new{display:inline-block;padding:10px 24px;background:transparent;color:var(--mu);border:1px solid var(--bdr);border-radius:10px;font-size:13px;cursor:pointer;margin-left:8px}
 @media(max-width:500px){.sgrid{grid-template-columns:1fr 1fr}.cmp{grid-template-columns:1fr}}
 </style>
@@ -515,7 +521,15 @@ Ces 3 principes résument 80% des gains mesurés lors des formations éco-condui
   <div class="cert-ico">🏆</div>
   <div class="cert-t">Formation validée !</div>
   <div class="cert-s" id="cert-s"></div>
-  <button class="btn-pdf" onclick="dlPDF()">⬇ Télécharger mon certificat PDF</button>
+  
+  <div class="sig-box">
+    <p>✍️ Signez ci-dessous avec la souris (obligatoire pour télécharger le certificat)</p>
+    <canvas id="sig-canvas" width="400" height="120"></canvas>
+    <div class="sig-btns">
+      <button class="btn-clear" onclick="clearSig()">Effacer la signature</button>
+    </div>
+  </div>
+<button class="btn-pdf" onclick="dlPDF()">⬇ Télécharger mon certificat PDF</button>
   <button class="btn-new" onclick="location.reload()">Recommencer</button>
 </div>
 
@@ -755,12 +769,40 @@ function showM(n){
 // ══ CERTIFICAT ══
 function showCert(){
   document.getElementById('sc-cert').style.display='block';
+  setTimeout(initSig,100);
   var today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   document.getElementById('cert-s').innerHTML='<strong>'+PRENOM+' '+NOM.toUpperCase()+'</strong><br>'+POSTE+'<br><br>5 modules validés · 25 questions · Score 100%<br>Délivré le '+today;
   window.scrollTo(0,0);
 }
 
+
+// ══ SIGNATURE CANVAS ══
+var sigCanvas, sigCtx, drawing=false;
+function initSig(){
+  sigCanvas=document.getElementById('sig-canvas');
+  if(!sigCanvas)return;
+  sigCtx=sigCanvas.getContext('2d');
+  sigCtx.strokeStyle='#0D2B5E';sigCtx.lineWidth=2;sigCtx.lineCap='round';
+  sigCanvas.addEventListener('mousedown',function(e){drawing=true;sigCtx.beginPath();sigCtx.moveTo(e.offsetX,e.offsetY);});
+  sigCanvas.addEventListener('mousemove',function(e){if(!drawing)return;sigCtx.lineTo(e.offsetX,e.offsetY);sigCtx.stroke();});
+  sigCanvas.addEventListener('mouseup',function(){drawing=false;});
+  sigCanvas.addEventListener('mouseleave',function(){drawing=false;});
+  // Touch
+  sigCanvas.addEventListener('touchstart',function(e){e.preventDefault();drawing=true;var t=e.touches[0];var r=sigCanvas.getBoundingClientRect();sigCtx.beginPath();sigCtx.moveTo(t.clientX-r.left,t.clientY-r.top);},{passive:false});
+  sigCanvas.addEventListener('touchmove',function(e){e.preventDefault();if(!drawing)return;var t=e.touches[0];var r=sigCanvas.getBoundingClientRect();sigCtx.lineTo(t.clientX-r.left,t.clientY-r.top);sigCtx.stroke();},{passive:false});
+  sigCanvas.addEventListener('touchend',function(){drawing=false;});
+}
+function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);}
+function isSigEmpty(){
+  if(!sigCanvas)return true;
+  var px=sigCtx.getImageData(0,0,sigCanvas.width,sigCanvas.height).data;
+  for(var i=3;i<px.length;i+=4){if(px[i]>0)return false;}
+  return true;
+}
+
 function dlPDF(){
+  if(isSigEmpty()){alert('Merci de signer avant de telecharger le certificat.');return;}
+  var sigData=sigCanvas.toDataURL('image/png');
   var jsPDFc=window.jspdf.jsPDF;
   var doc=new jsPDFc({orientation:'portrait',unit:'mm',format:'a4'});
   var W=210,M=16,CW=W-M*2;
@@ -783,25 +825,22 @@ function dlPDF(){
   doc.setTextColor(13,43,94);doc.setFont('helvetica','bold');doc.setFontSize(8);
   doc.text('IDENTIFICATION DU STAGIAIRE',M+2,y+4);y+=9;
 
-  var LBL=42; // largeur colonne label
-  var VAL=CW-LBL-2; // largeur colonne valeur
   var fields=[
-    ['Nom et prenom', PRENOM+' '+NOM.toUpperCase()],
-    ['Poste occupe', POSTE],
-    ['Date de formation', today],
-    ['Organisme', 'GTL / TAXI TL · 83 rue Jean Jaures · 69500 Bron'],
-    ['Formateur', 'GALA Rachida — RRH / Responsable formation']
+    ['Nom / Prenom', PRENOM+' '+NOM.toUpperCase()],
+    ['Poste', POSTE],
+    ['Date', today],
+    ['Organisme', 'GTL TAXI TL - 83 rue Jean Jaures - 69500 Bron'],
+    ['Formateur', 'GALA Rachida - RRH Responsable formation']
   ];
   fields.forEach(function(f){
     doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(13,43,94);
     doc.text(f[0]+' :',M,y);
     doc.setFont('helvetica','normal');doc.setTextColor(30,40,55);
-    // Wrap la valeur si trop longue
-    var lines=doc.splitTextToSize(f[1],VAL);
-    lines.forEach(function(l,idx){doc.text(l,M+LBL,y+(idx*4));});
-    var h=Math.max(6,lines.length*4+1);
-    doc.setDrawColor(200,216,232);doc.line(M,y+h-1,W-M,y+h-1);
-    y+=h;
+    var lines=doc.splitTextToSize(f[1],CW-32);
+    lines.forEach(function(l,idx){doc.text(l,M+30,y+(idx*4.5));});
+    var h=Math.max(7,lines.length*4.5+2);
+    doc.setDrawColor(200,216,232);doc.line(M,y+h,W-M,y+h);
+    y+=h+1;
   });
   y+=4;
 
@@ -857,12 +896,15 @@ function dlPDF(){
   doc.setDrawColor(200,216,232);doc.line(M,y,W-M,y);y+=5;
   doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(13,43,94);
   doc.text('Responsable formation :',M,y);
+  doc.text('Signature du salarie :',W/2+5,y);
   doc.setFont('helvetica','normal');doc.setFontSize(8);
-  doc.text('Fait a Lyon, le '+today,W-M,y,{align:'right'});
-  y+=6;
+  doc.text('Fait a Lyon, le '+today,W-M,y+5,{align:'right'});
+  y+=10;
   doc.setDrawColor(42,181,200);doc.line(M,y,M+55,y);
+  doc.line(W/2+5,y,W/2+65,y);
   doc.setFontSize(7);doc.setTextColor(96,112,128);
-  doc.text('GALA Rachida — RRH',M,y+4);
+  doc.text('GALA Rachida - RRH',M,y+4);
+  doc.addImage(sigData,'PNG',W/2+5,y-12,60,15);
 
   // FOOTER
   doc.setFillColor(240,245,251);doc.rect(0,282,W,15,'F');
